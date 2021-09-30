@@ -31,41 +31,39 @@ export default class Cell extends React.Component {
     console.log('cell', this.props.displayName);
     window.document.addEventListener("unselectAll", this.handleUnselectAll);
 
-    socket.on('skeditcoming', (data)=>{
-      
+    socket.on('skeditcoming', (data) => {
+      console.log('接受修改信号', data);
       // 取消其他选中框
       this.emitUnselectAllEvent();
       this.setState({
         typingName: data.dataName,
         currentXy: [...data.dataCoor],
-        editing:true
+        editing: true
       })
     })
-    
-    socket.on('editendcoming', (data)=>{
+
+    socket.on('editendcoming', (data) => {
+      console.log(data, 'editendcoming+_+_+');
+      this.props.onChangedValue(
+        {
+          x: data.xycoor[0],
+          y: data.xycoor[1],
+        },
+        data.newValue
+      );
       this.setState({
         typingName: '',
-        currentXy: [...data.dataCoor],
+        currentXy: [],
+        // value:data.newValue,
         editing: false
       })
     })
-
-    socket.on('editend', ()=>{
-      this.emitUnselectAllEvent();
-      this.setState({
-        editing: false
-      })
-    })
-    
-
-    
 
   }
 
-
-  static getDerivedStateFromProps(nextProps, prevState){
-    const {value} = nextProps
-    if (value.length>0){
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { value } = nextProps
+    if (value.length > 0) {
       return {
         editing: true,
         value: value,
@@ -84,7 +82,7 @@ export default class Cell extends React.Component {
    * by calling the formula calculation
    */
   onChange = (e) => {
-    this.setState({ value: e.target.value});
+    this.setState({ value: e.target.value });
     this.display = this.determineDisplay(
       { x: this.props.x, y: this.props.y },
       e.target.value
@@ -114,6 +112,10 @@ export default class Cell extends React.Component {
    * Handle moving away from a cell, stores the new value
    */
   onBlur = (e) => {
+    socket.emit('editend', {
+      'xycoor': [this.props.x, this.props.y],
+      'newValue': e.target.value
+    })
     this.hasNewValue(e.target.value);
   };
 
@@ -153,13 +155,15 @@ export default class Cell extends React.Component {
     const unselectAllEvent = new Event("unselectAll");
     window.document.dispatchEvent(unselectAllEvent);
   };
-  
+
 
   /**
    * Handle clicking a Cell.
    */
   clicked = () => {
     // Prevent click and double click to conflict
+    this.emitUnselectAllEvent();
+    
     this.timer = setTimeout(() => {
       if (!this.prevent) {
         // Unselect all the other cells and set the current
@@ -179,19 +183,19 @@ export default class Cell extends React.Component {
     // Prevent click and double click to conflict
     clearTimeout(this.timer);
     this.prevent = true;
-
-    // Unselect all the other cells and set the current
-    // Cell state to `selected` & `editing`
     this.emitUnselectAllEvent();
+    this.setState({ editing: true, selected: true });
+    // Unselect all the otfher cells and set the current
+    // Cell state to `selected` & `editing`
+    // 双击格子后 发送信号
     socket.emit('skediting', {
       'dataName': this.props.displayName,
       'dataCoor': [this.props.x, this.props.y]
-  })
-    this.setState({ editing: true, selected: true});
+    })
   };
 
 
-  
+
 
   determineDisplay = ({ x, y }, value) => {
     return value;
@@ -240,9 +244,9 @@ export default class Cell extends React.Component {
       nextState.value !== this.state.value ||
       nextState.editing !== this.state.editing ||
       nextState.selected !== this.state.selected ||
-      nextProps.value !== this.props.value ||
-      nextProps.typingName !== this.props.typingName
+      nextProps.value !== this.props.value
     ) {
+      console.log("Cell的判断 True");
       return true;
     }
 
@@ -275,23 +279,34 @@ export default class Cell extends React.Component {
       css.outlineColor = "lightblue";
       css.outlineStyle = "dotted";
     }
-
-    if (this.state.currentXy.length>0 && this.props.x===this.state.currentXy[0] &&
-      this.props.y===this.state.currentXy[1]) {
+    if (this.state.currentXy.length > 0 && this.props.x === this.state.currentXy[0] &&
+      this.props.y === this.state.currentXy[1]) {
       console.log('cellTyping', this.state.typingName);
       return (
         <>
-        <input
-          style={css}
-          type="text"
-          onBlur={this.onBlur}
-          onKeyPress={this.onKeyPressOnInput}
-          value={this.state.value}
-          onChange={this.onChange}
-          placeholder={this.state.typingName+'正在编辑'}
-          autoFocus
-        />
+          <input
+            style={css}
+            type="text"
+            onBlur={this.onBlur}
+            onKeyPress={this.onKeyPressOnInput}
+            value={this.state.value}
+            onChange={this.onChange}
+            placeholder={this.state.typingName + '正在编辑'}
+            autoFocus
+          />
         </>
+      );
+    }
+    if(this.state.currentXy.length<1){
+      return (
+        <span
+        onClick={(e) => this.clicked(e)}
+        onDoubleClick={(e) => this.doubleClicked(e)}
+        style={css}
+        role="presentation"
+      >
+        {this.display}
+      </span>
       );
     }
     return (

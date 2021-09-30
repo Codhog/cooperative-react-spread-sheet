@@ -5,7 +5,6 @@ import Cell from '../Cell/Cell'
 const Row = (props) => {
   const cells = []
   const y = props.y
-  console.log('rowsdisplayName', props.displayName);
   for (let x = 0; x < props.x; x += 1) {
     cells.push(
       <Cell

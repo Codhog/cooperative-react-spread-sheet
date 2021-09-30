@@ -31,7 +31,6 @@ export default class Table extends React.Component {
   };
 
   updateCells = () => {
-    console.log("forceUpdate");
     this.forceUpdate();
   };
 
@@ -39,12 +38,22 @@ export default class Table extends React.Component {
 
   componentDidMount() {
     socket.on("sknew", (sdata) => {
+      console.log('sknew接收',sdata);
       this.setState({
         data: sdata.data,
         sender: sdata.sender
       })
-      this.updateCells()
+      this.forceUpdate()
     });
+
+    // socket.on('editendcoming', (data) => {
+    //   console.log(data, 'editendcoming+_+_+');
+    //   this.setState({
+    //     typingName: '',
+    //     currentXy: [],
+    //     value:data.newValue,
+    //   })
+    // })
   }
 
 
