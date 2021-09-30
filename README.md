@@ -121,13 +121,13 @@ with the server code (shown above)
 
 we shall have the app working like this
 
-![1](D:\blog_file\2.gif?raw=true)
+![1](.\2.gif?raw=true)
 
 Now we have the real-time text, let's make others know who is editing.
 
 
 
-![3](D:\blog_file\3.gif?raw=true)
+![3](.\3.gif?raw=true)
 
 
 
@@ -206,7 +206,7 @@ And the receiving part.
 
 If we emit "newmessage" to server, after server received it, it need another name to send to client "newMessageComing"
 
-![](D:\blog_file\4.png?raw=true)
+![](.\4.png?raw=true)
 
 #### 5. Transmitting data through Socket.io
 
