@@ -1,5 +1,3 @@
-sheet-api/node_modules/
-react-spread-sheet/node_modules/
-sheet-api/package-lock.json
-sheet-api/yarn.lock
-react-spread-sheet/package-lock.json
+node_modules/
+package-lock.json
+yarn.lock
