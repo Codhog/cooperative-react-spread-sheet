@@ -305,7 +305,7 @@ export default class Cell extends React.Component {
     }
     if (currentXy.length > 0 && this.props.x === currentXy[0] &&
       this.props.y === currentXy[1]) {
-        console.log('Other', otherEditing, typingName, value);
+        // console.log('Other', otherEditing, typingName, value);
         return(
           <>
           <input
@@ -315,7 +315,7 @@ export default class Cell extends React.Component {
             onKeyPress={this.onKeyPressOnInput}
             value={value}
             onChange={this.onChange}
-            placeholder={typingName + '正在编辑'}
+            placeholder={typingName + ' is typing'}
             autoFocus
           />
         </>

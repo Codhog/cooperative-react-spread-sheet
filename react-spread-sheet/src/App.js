@@ -1,9 +1,7 @@
 import React from "react";
 import Table from "./Table/Table";
 import { socket } from "./socket";
-
-
-
+import './App.css';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -23,11 +21,11 @@ export default class App extends React.Component {
 
 
   render() {
-    if(this.username.current){
+    if (this.username.current) {
     }
-    
 
-    
+
+
     if (this.state.displayTable) {
       return (
         <div style={{ width: "max-content" }}>
@@ -36,15 +34,21 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <>
-        <input
+        <div className="box">
+          <h1>Cooperative Editing Sheet</h1>
+          <input
             type="text"
-            placeholder="请输入您的用户名"
-            ref={this.username} 
-            />
-          <button type="submit" onClick={this.handleLogin}>进入</button>
-        </>
-          
+            placeholder="Please type username"
+            ref={this.username}
+          />
+          <button
+            style={{
+              marginTop: '20px',
+              padding: '10px'
+            }}
+            type="submit" onClick={this.handleLogin}>Enter</button>
+        </div>
+
       );
     }
   }

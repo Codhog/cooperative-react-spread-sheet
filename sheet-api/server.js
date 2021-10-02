@@ -1,10 +1,17 @@
 var Koa = require('koa');
 var app = new Koa();
-const config = require('./db')
+const serve = require("koa-static");
+const mount = require("koa-mount");
+// const config = require('./db')
 
-
+const static_pages = new Koa();
+static_pages.use(serve(__dirname + "/build")); //serve the build directory
+app.use(mount("/", static_pages));
+  
 const server = require('http').createServer(app.callback())
 var io = require('socket.io')(server)
+
+const PORT = process.env.PORT || 3000;
 
 let users = new Map()
 io.on("connection", (socket) => {
@@ -45,4 +52,6 @@ io.on("connection", (socket) => {
 })
 
 
-server.listen(8080, () => console.log('http:localhost:8080'))
+server.listen(PORT, function () {
+    console.log("Running on port %s. Visit http://localhost:%s/", PORT, PORT);
+});
