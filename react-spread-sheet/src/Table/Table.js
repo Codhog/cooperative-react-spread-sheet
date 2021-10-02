@@ -7,7 +7,7 @@ import { socket } from "../socket";
 export default class Table extends React.Component {
   constructor(props) {
     super(props);
-
+    
     this.state = {
       data: {},
       displayName: props.displayName,
@@ -21,6 +21,14 @@ export default class Table extends React.Component {
     modifiedData[y][x] = value;
     this.setState({ data: modifiedData });
     this.sendMessage(modifiedData, this.props.displayName)
+  };
+
+  editEndChangedCell = ({ x, y }, value) => {
+    const modifiedData = Object.assign({}, this.state.data);
+    if (!modifiedData[y]) modifiedData[y] = {};
+    modifiedData[y][x] = value;
+    this.setState({ data: modifiedData });
+    this.forceUpdate()
   };
 
   sendMessage = (sdata, sendername) => {
@@ -38,7 +46,6 @@ export default class Table extends React.Component {
 
   componentDidMount() {
     socket.on("sknew", (sdata) => {
-      console.log('sknew接收',sdata);
       this.setState({
         data: sdata.data,
         sender: sdata.sender
@@ -46,20 +53,15 @@ export default class Table extends React.Component {
       this.forceUpdate()
     });
 
-    // socket.on('editendcoming', (data) => {
-    //   console.log(data, 'editendcoming+_+_+');
-    //   this.setState({
-    //     typingName: '',
-    //     currentXy: [],
-    //     value:data.newValue,
-    //   })
-    // })
+    socket.on('editendcoming', (data) => {
+      let [x,y] = [data.xycoor[0], data.xycoor[1]]
+      this.editEndChangedCell({x, y}, data.newValue)  
+    })
   }
 
 
   render() {
     const rows = [];
-    console.log('main render', this.state.data);
     for (let y = 0; y < this.props.y + 1; y += 1) {
       const rowData = this.state.data[y] || {};
       rows.push(

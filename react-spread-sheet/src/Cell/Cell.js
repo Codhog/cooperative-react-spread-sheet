@@ -10,6 +10,8 @@ export default class Cell extends React.Component {
     super(props);
     this.state = {
       editing: false,
+      // otherEditing: false,
+      selected: false,
       value: props.value,
       typingName: '',
       currentXy: []
@@ -28,35 +30,51 @@ export default class Cell extends React.Component {
    * unselect all event
    */
   componentDidMount() {
-    console.log('cell', this.props.displayName);
-    window.document.addEventListener("unselectAll", this.handleUnselectAll);
+    // window.document.addEventListener("unselectAll", this.handleUnselectAll);
 
     socket.on('skeditcoming', (data) => {
-      console.log('接受修改信号', data);
       // 取消其他选中框
       this.emitUnselectAllEvent();
+      // Determine if I'm the one sending, to disable other one's input
       this.setState({
         typingName: data.dataName,
         currentXy: [...data.dataCoor],
         editing: true
       })
+      // if (data.dataName === this.props.displayName) {
+
+      // }
+      // else {
+      //   console.log('ither state', [...data.dataCoor]);
+      //   this.setState({
+      //     typingName: data.dataName,
+      //     currentXy: [...data.dataCoor],
+      //     editing:false,
+      //     // otherEditing: true
+      //   })
+      // }
+
     })
 
     socket.on('editendcoming', (data) => {
-      console.log(data, 'editendcoming+_+_+');
-      this.props.onChangedValue(
-        {
-          x: data.xycoor[0],
-          y: data.xycoor[1],
-        },
-        data.newValue
-      );
+      window.document.addEventListener("unselectAll", this.handleUnselectAll);
       this.setState({
         typingName: '',
         currentXy: [],
-        // value:data.newValue,
         editing: false
       })
+      // if (data.name === this.props.displayName) {
+
+      // }
+      // else {
+      //   this.setState({
+      //     typingName: '',
+      //     currentXy: [],
+      //     otherEditing: false,
+      //     editing: false
+      //   })
+      // }
+
     })
 
   }
@@ -110,11 +128,13 @@ export default class Cell extends React.Component {
 
   /**
    * Handle moving away from a cell, stores the new value
+   * 编辑结束 发送信号
    */
   onBlur = (e) => {
     socket.emit('editend', {
       'xycoor': [this.props.x, this.props.y],
-      'newValue': e.target.value
+      'newValue': e.target.value,
+      'name': this.props.displayName
     })
     this.hasNewValue(e.target.value);
   };
@@ -145,6 +165,7 @@ export default class Cell extends React.Component {
       value
     );
     this.setState({ editing: false });
+    this.props.updateCells()
   };
 
   /**
@@ -163,7 +184,7 @@ export default class Cell extends React.Component {
   clicked = () => {
     // Prevent click and double click to conflict
     this.emitUnselectAllEvent();
-    
+
     this.timer = setTimeout(() => {
       if (!this.prevent) {
         // Unselect all the other cells and set the current
@@ -184,7 +205,12 @@ export default class Cell extends React.Component {
     clearTimeout(this.timer);
     this.prevent = true;
     this.emitUnselectAllEvent();
-    this.setState({ editing: true, selected: true });
+
+    this.setState({
+      selected: true,
+      currentXy: [this.props.x, this.props.y],
+      typingName: this.props.displayName
+    });
     // Unselect all the otfher cells and set the current
     // Cell state to `selected` & `editing`
     // 双击格子后 发送信号
@@ -193,9 +219,6 @@ export default class Cell extends React.Component {
       'dataCoor': [this.props.x, this.props.y]
     })
   };
-
-
-
 
   determineDisplay = ({ x, y }, value) => {
     return value;
@@ -243,10 +266,9 @@ export default class Cell extends React.Component {
     if (
       nextState.value !== this.state.value ||
       nextState.editing !== this.state.editing ||
-      nextState.selected !== this.state.selected ||
-      nextProps.value !== this.props.value
+      nextState.selected !== this.state.selected
+      || nextProps.value !== this.props.value
     ) {
-      console.log("Cell的判断 True");
       return true;
     }
 
@@ -255,8 +277,10 @@ export default class Cell extends React.Component {
 
   render() {
     const css = this.calculateCss();
-
+    const {selected, currentXy, typingName, value, otherEditing} = this.state
     // column 0
+    // console.log(`re-render了么 oe=${otherEditing} currentXy=${currentXy[0]}`, currentXy.length > 0 && this.props.x === currentXy[0] &&
+    // this.props.y === currentXy[1]);
     if (this.props.x === 0) {
       return <span style={css}>{this.props.y}</span>;
     }
@@ -275,40 +299,50 @@ export default class Cell extends React.Component {
       );
     }
 
-    if (this.state.selected) {
+    if (selected) {
       css.outlineColor = "lightblue";
       css.outlineStyle = "dotted";
     }
-    if (this.state.currentXy.length > 0 && this.props.x === this.state.currentXy[0] &&
-      this.props.y === this.state.currentXy[1]) {
-      console.log('cellTyping', this.state.typingName);
-      return (
-        <>
+    if (currentXy.length > 0 && this.props.x === currentXy[0] &&
+      this.props.y === currentXy[1]) {
+        console.log('Other', otherEditing, typingName, value);
+        return(
+          <>
           <input
             style={css}
             type="text"
             onBlur={this.onBlur}
             onKeyPress={this.onKeyPressOnInput}
-            value={this.state.value}
+            value={value}
             onChange={this.onChange}
-            placeholder={this.state.typingName + '正在编辑'}
+            placeholder={typingName + '正在编辑'}
             autoFocus
           />
         </>
-      );
+        );
+        // if(otherEditing){
+        //   console.log('跑了没');
+
+        // }
+        // else{
+        //   return (
+        //     <>
+        //       <input
+        //         style={css}
+        //         type="text"
+        //         onBlur={this.onBlur}
+        //         onKeyPress={this.onKeyPressOnInput}
+        //         value={this.state.value}
+        //         onChange={this.onChange}
+        //         placeholder={this.state.typingName + '正在编辑'}
+        //         autoFocus
+        //       />
+        //     </>
+        //   );
+        // }
+
     }
-    if(this.state.currentXy.length<1){
-      return (
-        <span
-        onClick={(e) => this.clicked(e)}
-        onDoubleClick={(e) => this.doubleClicked(e)}
-        style={css}
-        role="presentation"
-      >
-        {this.display}
-      </span>
-      );
-    }
+
     return (
       <span
         onClick={(e) => this.clicked(e)}
@@ -316,7 +350,7 @@ export default class Cell extends React.Component {
         style={css}
         role="presentation"
       >
-        {this.display}
+        {this.state.value}
       </span>
     );
   }

@@ -13,7 +13,6 @@ const Row = (props) => {
         x={x}
         onChangedValue={props.handleChangedCell}
         updateCells={props.updateCells}
-        // onChangedSocket={props.receiveSocket}
         value={props.rowData[x] || ''}
         displayName={props.displayName}
       />,
