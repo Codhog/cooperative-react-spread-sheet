@@ -120,7 +120,7 @@ Now we have the real-time text, let's make others know who is editing.
 
 
 
-![3](https://github.com/Codhog/cooperative-react-spread-sheet/tree/main/images/3.gif?raw=true)
+![3](https://github.com/Codhog/cooperative-react-spread-sheet/blob/da90f93d30f5953a8021ab57ca869092d9c1f4d4/images/3.gif?raw=true)
 
 
 
