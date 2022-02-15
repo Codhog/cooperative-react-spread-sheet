@@ -113,13 +113,13 @@ with the server code (shown above)
 
 we shall have the app working like this
 
-![2](\images\2.gif?raw=true)
+![2](https://github.com/Codhog/cooperative-react-spread-sheet/tree/main/images/2.gif?raw=true)
 
 Now we have the real-time text, let's make others know who is editing.
 
 
 
-![3](\images\3.gif?raw=true)
+![3](https://github.com/Codhog/cooperative-react-spread-sheet/tree/main/images/3.gif?raw=true)
 
 
 
