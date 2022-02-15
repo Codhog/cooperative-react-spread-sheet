@@ -113,7 +113,8 @@ with the server code (shown above)
 
 we shall have the app working like this
 
-![2](https://github.com/Codhog/cooperative-react-spread-sheet/tree/main/images/2.gif?raw=true)
+![2](https://github.com/Codhog/cooperative-react-spread-sheet/blob/24f5ddffa6f3e3ede3e436fa269f0e816d3a672f/images/2.gif?raw=true)
+
 
 Now we have the real-time text, let's make others know who is editing.
 
@@ -198,7 +199,7 @@ And the receiving part.
 
 If we emit "newmessage" to server, after server received it, it need another name to send to client "newMessageComing"
 
-![](\images\4.png?raw=true)
+![4](https://github.com/Codhog/cooperative-react-spread-sheet/blob/24f5ddffa6f3e3ede3e436fa269f0e816d3a672f/images/4.png?raw=true)
 
 #### 5. Transmitting data through Socket.io
 
