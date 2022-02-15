@@ -11,15 +11,7 @@
 
 #### 2. Abstraction
 
-This App is a simple implementation of co-operative editing document meant for demonstrating how client-ui can work with server through a constant connection called websocket.
-
-The client-UI is based of Flavio Copes(https://flaviocopes.com/) React Excel tutorial,
-
-https://flaviocopes.com/tutorial-react-spreadsheet/
-
-while this guide emphasize on how socket.io works to establish constant connection
-
-between multiple clients and server.
+This App is a simple implementation of co-operative editing document meant for demonstrating how client-ui can work with server through a constant tcp-based connection - Websocket.
 
 #### 3. Folders Structure
 
